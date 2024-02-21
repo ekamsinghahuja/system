@@ -9,36 +9,70 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <set>
 
 using namespace std;
 
-class ObserverInterface{
+
+class observer{
     public:
-    virtual ~ObserverInterface(){};
-    virtual void Update(const string &message_from_subject) = 0;
+    string user_id;
+    set<observable> 
+    observer(string s){
+        user_id = s;
+    }
+    void subs(observable* prod){
+        prod->add_sub()
+    }
+    void ping(string product_key){
+        cout<<product_key<<" noticed"<<endl;
+    }
 
 };
 
-
-
-class SubjectInterface{
+class observable{
     public:
-    virtual ~SubjectInterface(){};
-    virtual void Attach(ObserverInterface *observer) = 0;
-    virtual void Detach(ObserverInterface *observer) = 0;
-    virtual void Notify() = 0;
+    string product_key;
+    set<observer*> list_of_subscribers;
+
+    observable(string s){
+        product_key = s;
+    }
+    void add_sub(observer* obj){
+        cout<<obj->user_id<<" added"<<endl;
+        list_of_subscribers.insert(obj);
+    }
+    void rem_sub(observer* obj){
+        cout<<obj->user_id<<" removed"<<endl;
+        list_of_subscribers.erase(obj);
+    }
+    void notify(){
+        for(observer* x:list_of_subscribers){
+            cout<<x->user_id<<" notified"<<endl;
+            x->ping(product_key);
+        }
+
+    }
 };
 
+int main(){
+    observable* a = new observable("PlayStation");
+    observer* obj1 = new observer("ekamsingh"); 
+    observer* obj2 = new observer("ramsingh");
+    observer* obj3 = new observer("john");
 
-class Subject:public SubjectInterface{
-    virtual ~Subject() {
-        cout << "Goodbye, I was the Subject.\n";
-    }
-    void Attach(IObserver *observer){
-        list_observer_.push_back(observer);
-    }
-    void Detach(IObserver *observer) override {
-        list_observer_.remove(observer);
-    }
+    a->add_sub(obj1);
+    a->add_sub(obj2);
+    a->add_sub(obj3);
 
-};
+    a->rem_sub(obj1);
+
+    cout<<"pings"<<endl;
+    a->notify();
+
+
+
+
+}
+
+
